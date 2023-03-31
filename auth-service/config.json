@@ -1,0 +1,5 @@
+{
+    "database" : "mongodb+srv://project:mmKWwtOtiqPVoKWM@cluster0.hacye.mongodb.net/APPTRABSPORT",
+    "token_secret" : "token-secret !!"
+    
+}

@@ -1,0 +1,49 @@
+version: '3'
+services:
+  auth-service:
+    build: ./auth-service
+    image: auth-service
+    container_name: auth-service
+    hostname: auth-service
+    ports:
+      - 3001:3000
+    networks:
+      - backendNetwork
+    depends_on:
+      - mongo 
+   
+    
+  # new-service:
+  #   build:  ./new-service
+  #   image: new-service
+  #   container_name: new-service
+  #   hostname: new-service
+  #   ports: 
+  #     - 3002:3000
+  #   networks:
+  #     - backendNetwork
+  #   depends_on:
+  #     - mongo  
+
+
+    
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    hostname: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - backendNetwork
+    volumes:
+      - mongo-data:/data/db
+networks:
+  backendNetwork:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
+  rabbitmq_data:
+    driver: local    
+  
