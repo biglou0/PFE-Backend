@@ -12,7 +12,16 @@ const register = async (req, res) => {
     const { Nom , Prenom, email, phone,DateNaissance,gender,role ,Nationalite,licenseNo,cnicNo,address,ratingsAverage,ratingsQuantity,postalCode} = req.body;
     
  
-const {firebaseUrl} =req.file ? req.file : "";
+// const {firebaseUrl} =req.file ? req.file : "";
+
+
+const photoAvatarUrl = req.uploadedFiles.photoAvatar || '';
+const photoPermisRecUrl = req.uploadedFiles.photoPermisRec || '';
+const photoPermisVerUrl = req.uploadedFiles.photoPermisVer || '';
+const photoVtcUrl = req.uploadedFiles.photoVtc || '';
+const photoCinUrl = req.uploadedFiles.photoCin || '';
+
+console.log('tetsimage',photoAvatarUrl)
 
 
 const cipher = crypto.createCipher('aes-256-cbc', 'passwordforencrypt');
@@ -38,12 +47,14 @@ encryptedPassword += cipher.final('hex');
       nouveauUtilisateur.email = email;
       nouveauUtilisateur.phone = phone;
       nouveauUtilisateur.password = encryptedPassword; 
-      nouveauUtilisateur.photoAvatar = firebaseUrl;
-      // nouveauUtilisateur.photoCin = req.file;
-      // nouveauUtilisateur.photoPermis = firebaseUrl;
-      ///nouveauUtilisateur.photoVtc = firebaseUrl;
+      nouveauUtilisateur.photoAvatar = photoAvatarUrl;
+       nouveauUtilisateur.photoCin = photoCinUrl;
+      nouveauUtilisateur.photoPermisRec = photoPermisRecUrl;
+      nouveauUtilisateur.photoPermisVer = photoPermisVerUrl;
+      nouveauUtilisateur.photoVtc = photoVtcUrl;
       nouveauUtilisateur.gender = gender;
       nouveauUtilisateur.role = "Chauffeur";
+      nouveauUtilisateur.Cstatus = "En_cours";
       nouveauUtilisateur.DateNaissance = DateNaissance
       nouveauUtilisateur.Nationalite = Nationalite
       nouveauUtilisateur.licenseNo = licenseNo
@@ -58,7 +69,7 @@ encryptedPassword += cipher.final('hex');
         nouveauUtilisateur
     )
 
-    console.log(firebaseUrl)
+
     
       nouveauUtilisateur.save();
   
@@ -196,7 +207,11 @@ encryptedPassword += cipher.final('hex');
   /**----------Update Agent----------------- */
   const update = (req, res, next)=>{
     const {id} = req.params
-    const {firebaseUrl} =req.file ? req.file : "";
+    const photoAvatarUrl = req.uploadedFiles.photoAvatar ;
+    const photoPermisRecUrl = req.uploadedFiles.photoPermisRec ;
+    const photoPermisVerUrl = req.uploadedFiles.photoPermisVer ;
+    const photoVtcUrl = req.uploadedFiles.photoVtc ;
+    const photoCinUrl = req.uploadedFiles.photoCin ;
     let updateData ={
 
   
@@ -204,7 +219,11 @@ encryptedPassword += cipher.final('hex');
         Prenom : req.body.Prenom,
         email : req.body.email,
         phone : req.body.phone,
-        photoAvatar : firebaseUrl,
+        photoAvatar : photoAvatarUrl,
+        photoCin : photoCinUrl,
+        photoPermisRec : photoPermisRecUrl,
+        photoPermisVer : photoPermisVerUrl,
+        photoVtc : photoVtcUrl,
         gender:req.body.gender,
         role:req.body.role,
         Nationalite : req.body.Nationalite,
@@ -226,30 +245,73 @@ encryptedPassword += cipher.final('hex');
     })
 .catch(error =>{
     res.json({
-        message : 'error with updtaing Agent !'
+        message : 'error with updtaing Chauffeur !'
     })
 })
 
 }
 
-  const updatestatus = async (req,res, next) => {
-    const {id} = req.params
+const updatestatus = async (req, res, next) => {
+  const { id } = req.params;
 
-     try{
-    const adminUpdated = await Chauffeur.findByIdAndUpdate(id,{$set:{isActive:false}})
-    console.log(adminUpdated)
+  try {
+    const chauffeurUpdated = await Chauffeur.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          isActive: false,
+          Cstatus: "Désactivé"
+        }
+      }
+    );
+
+    if (!chauffeurUpdated) {
+      return res.status(404).send({
+        message: "Chauffeur not found!"
+      });
+    }
+
+    console.log(chauffeurUpdated);
 
     return res.status(200).send({
-        message: "Chauffeur was updated successfully!"
-       
-        
-      })
-      
-    }catch(error){
-        return res.status(500).send({err:error})
+      message: "Chauffeur was Disabled successfully!"
+    });
+
+  } catch (error) {
+    return res.status(500).send({ error: error });
+  }
+};
+const Comptevald = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const chauffeurUpdated = await Chauffeur.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          isActive: true,
+          Cstatus: "Validé"
+        }
+      }
+    );
+
+    if (!chauffeurUpdated) {
+      return res.status(404).send({
+        message: "Chauffeur not found!"
+      });
     }
-    console.log(res)
-    }
+
+    console.log(chauffeurUpdated);
+
+    return res.status(200).send({
+      message: "Chauffeur was updated successfully!"
+    });
+
+  } catch (error) {
+    return res.status(500).send({ error: error });
+  }
+};
+
 
 
     const chauffdes = async(req,res,data) =>{
@@ -288,22 +350,22 @@ encryptedPassword += cipher.final('hex');
       }
 
 
-      //   const recupereruse = async(req,res ,data) =>{
-//     Chauffeur.find((err, data)=>{
-//         res.json(data);
+        const recupereruse = async(req,res ,data) =>{
+    Chauffeur.find((err, data)=>{
+        res.json(data);
         
-//     });
-// }
-
-const recupereruse = async(req,res,data) =>{
-   
-  Chauffeur.find({ isActive: true },(err, data)=>{
-    
-      res.json(data);
-      console.log(data)
-      
-  });
+    });
 }
+
+// const recupereruse = async(req,res,data) =>{
+   
+//   Chauffeur.find({ isActive: true },(err, data)=>{
+    
+//       res.json(data);
+//       console.log(data)
+      
+//   });
+// }
 
 /**----------------------Supprimer un agent------------------- */
 
@@ -329,26 +391,38 @@ const destroy = async (req, res) => {
     });
     }
 
-    const updatestatuss = async (req,res, next) => {
-      const {id} = req.params
+    const updatestatuss = async (req, res, next) => {
+      const { id } = req.params;
     
-       try{
-      const adminUpdated = await Chauffeur.findByIdAndUpdate(id,{$set:{isActive:true}})
-      console.log(adminUpdated)
+      try {
+        const chauffeurUpdated = await Chauffeur.findByIdAndUpdate(
+          id,
+          {
+            $set: {
+              isActive: true,
+              Cstatus: "Validé"
+            }
+          }
+        );
     
-      return res.status(200).send({
-          message: "Chauffeur was updated successfully!"
-         
-          
-        })
-        
-      }catch(error){
-          return res.status(500).send({err:error})
+        if (!chauffeurUpdated) {
+          return res.status(404).send({
+            message: "Chauffeur not found!"
+          });
+        }
+    
+        console.log(chauffeurUpdated);
+    
+        return res.status(200).send({
+          message: "Chauffeur was Disabled successfully!"
+        });
+    
+      } catch (error) {
+        return res.status(500).send({ error: error });
       }
-      console.log(res)
-      }
+    };
     
 
   module.exports ={
-    register, login,recupereruse,destroy,searchuse,update,updatestatus,chauffdes,updatestatuss
+    register, login,recupereruse,destroy,searchuse,update,updatestatus,chauffdes,updatestatuss,Comptevald
     }

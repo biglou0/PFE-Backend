@@ -12,36 +12,49 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-const UploadImage = (req,res,next)=>{
-
-    if (!req.file)return next();
-
-    const photo = req.file;
-
-    const nomeArquivo = Date.now() + "." + photo.originalname.split(".").pop();
-
-    const file = bucket.file(nomeArquivo);
-
-    const stream = file.createWriteStream({
-        metadata:{
-            contentType: photo.mimetype,
+const UploadImage = (req, res, next) => {
+    if (!req.files) return next();
+  
+    const files = req.files;
+    const uploadedFiles = {};
+  
+    const uploadPromises = Object.keys(files).map((fieldName) => {
+      const file = files[fieldName][0];
+      const nomeArquivo = Date.now() + '.' + file.originalname.split('.').pop();
+      const bucketFile = bucket.file(nomeArquivo);
+      const stream = bucketFile.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
         },
+      });
+  
+      return new Promise((resolve, reject) => {
+        stream.on('error', (error) => {
+          reject(error);
+        });
+  
+        stream.on('finish', async () => {
+          await bucketFile.makePublic();
+  
+          const firebaseUrl = `https://storage.googleapis.com/${BUCKET}/${nomeArquivo}`;
+          uploadedFiles[fieldName] = firebaseUrl;
+  
+          resolve();
+        });
+  
+        stream.end(file.buffer);
+      });
     });
-
-    stream.on("error",(e) =>{
-        console.error(e);
-    })
-
-
-    stream.on("finish", async () =>{
-        await file.makePublic();
-
-        req.file.firebaseUrl =`https://storage.googleapis.com/${BUCKET}/${nomeArquivo}`;
-
+  
+    Promise.all(uploadPromises)
+      .then(() => {
+        req.uploadedFiles = uploadedFiles;
         next();
-    })
-
-    stream.end(photo.buffer);
-}
-
+      })
+      .catch((error) => {
+        console.error(error);
+        next();
+      });
+  };
+  
 module.exports = UploadImage;

@@ -16,6 +16,7 @@ const Agentrout = require  ('./routes/AgentRoute');
 const Agentchauff = require  ('./routes/ChauffeurRoute');
 const ClRoute = require  ('./routes/ClientRoute');
 const Rec = require ('./routes/ReclamationRout')
+const Voi = require ('./routes/VoitureRoutes')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -59,6 +60,7 @@ app.use('/agent',Agentrout);
 app.use('/Chauff',Agentchauff)
 app.use('/Client',ClRoute)
 app.use('/Rec',Rec)
+app.use('/Voi',Voi)
 
 
 

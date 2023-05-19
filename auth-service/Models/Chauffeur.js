@@ -2,6 +2,7 @@ const mongoose  =require('mongoose')
 const Schema  =mongoose.Schema
 const validator = require('validator');
 
+
 const ChauffSchema = new mongoose.Schema(
     {
 
@@ -59,6 +60,11 @@ const ChauffSchema = new mongoose.Schema(
           
             
         },
+        Cstatus: {
+            type: String,
+          
+            
+        },
 
         Nationalite: {
             type: String,
@@ -74,7 +80,11 @@ const ChauffSchema = new mongoose.Schema(
             type: String,
             // default: 'https://storage.googleapis.com/imagestor-768b5.appspot.com/1677485204106.jpg'
         },
-        photoPermis: {
+        photoPermisRec: {
+            type: String,
+            // default: 'https://storage.googleapis.com/imagestor-768b5.appspot.com/1677485204106.jpg'
+        },
+        photoPermisVer: {
             type: String,
             // default: 'https://storage.googleapis.com/imagestor-768b5.appspot.com/1677485204106.jpg'
         },
@@ -128,7 +138,11 @@ const ChauffSchema = new mongoose.Schema(
             type: Date,
             default: Date.now(),
             select: false
-        }
+        },
+        tarif: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Tarifs"
+        },
     },
      {timestamps: true},
     {
