@@ -38,7 +38,8 @@ const register = async (req, res) => {
             )
 
  
-const {firebaseUrl} =req.file ? req.file : "";
+            const photoAvatarUrl = req.uploadedFiles.photoAvatar || '';
+            console.log('tetsimage',photoAvatarUrl)
   
 const cipher = crypto.createCipher('aes-256-cbc', 'passwordforencrypt');
 let encryptedPassword = cipher.update(phone, 'utf8', 'hex');
@@ -58,7 +59,7 @@ encryptedPassword += cipher.final('hex');
       nouveauUtilisateur.email = email;
       nouveauUtilisateur.phone = phone;
       nouveauUtilisateur.password = encryptedPassword; 
-      nouveauUtilisateur.photoAvatar = firebaseUrl;
+      nouveauUtilisateur.photoAvatar = photoAvatarUrl;
       nouveauUtilisateur.gender = gender;
       nouveauUtilisateur.role = role;
       nouveauUtilisateur.DateNaissance = DateNaissance
@@ -153,7 +154,7 @@ const login = (req, res) => {
   /**----------Update Agent----------------- */
   const update = (req, res, next)=>{
     const {id} = req.params
-    const {firebaseUrl} =req.file ? req.file : "";
+    const photoAvatarUrl = req.uploadedFiles.photoAvatar ;
 
     let updateData ={
 
@@ -162,7 +163,7 @@ const login = (req, res) => {
         Prenom : req.body.Prenom,
         email : req.body.email,
         phone : req.body.phone,
-        photoAvatar : firebaseUrl,
+        photoAvatar : photoAvatarUrl,
         gender:req.body.gender,
         role:req.body.role,
         Nationalite : req.body.Nationalite,

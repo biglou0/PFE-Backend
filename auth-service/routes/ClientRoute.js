@@ -20,11 +20,24 @@ router.get('/afficheCl', ClientContro.recupereruse)
 
 router.delete('/destroyCl/:id', ClientContro.destroy);
  
-router.post('/AjoutCl',Multer.single("photoAvatar"),UploadImage,ClientContro.register)
+// router.post('/AjoutCl',Multer.single("photoAvatar"),UploadImage,ClientContro.register)
+
+router.post('/AjoutCl',Multer.fields([
+  { name: "photoAvatar", maxCount: 1  },
+
+
+]),UploadImage,ClientContro.register);
+
 //router.post('/loginAg',AuthController.login)
 router.get('/searchCl/:id', ClientContro.searchuse);
 //router.get('/getAg', AuthController.recupereruse);
-router.put('/updateCl/:id',Multer.single("photoAvatar"),UploadImage, ClientContro.update);
+// router.put('/updateCl/:id',Multer.single("photoAvatar"),UploadImage, ClientContro.update);
+
+router.put('/updateCl/:id',Multer.fields([
+  { name: "photoAvatar", maxCount: 1  },
+ 
+
+]),UploadImage,ClientContro.update);
 
 
 router.put('/updatestatus/:id', ClientContro.updatestatus);

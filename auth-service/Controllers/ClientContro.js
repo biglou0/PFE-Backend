@@ -10,7 +10,7 @@ const register = async (req, res) => {
     const { Nom , Prenom, email, phone,DateNaissance,gender,role ,Nationalite,cnicNo,address,ratingsAverage,ratingsQuantity} = req.body;
     
  
-const {firebaseUrl} =req.file ? req.file : "";
+    const photoAvatarUrl = req.uploadedFiles.photoAvatar || '';
   
   
 const cipher = crypto.createCipher('aes-256-cbc', 'passwordforencrypt');
@@ -36,7 +36,7 @@ encryptedPassword += cipher.final('hex');
       nouveauUtilisateur.email = email;
       nouveauUtilisateur.phone = phone;
       nouveauUtilisateur.password = encryptedPassword; 
-      nouveauUtilisateur.photoAvatar = firebaseUrl;
+      nouveauUtilisateur.photoAvatar = photoAvatarUrl;
       nouveauUtilisateur.gender = gender;
       nouveauUtilisateur.role = "Client";
       nouveauUtilisateur.DateNaissance = DateNaissance
@@ -53,9 +53,7 @@ encryptedPassword += cipher.final('hex');
     
       nouveauUtilisateur.save();
   
-      console.log(
-        mdpEncrypted
-      )
+   
       // token creation
       const token = jwt.sign({ _id: nouveauUtilisateur._id }, config.token_secret, {
         expiresIn: "120000", // in Milliseconds (3600000 = 1 hour)
@@ -183,7 +181,7 @@ encryptedPassword += cipher.final('hex');
   /**----------Update Agent----------------- */
   const update = (req, res, next)=>{
     const {id} = req.params
-    const {firebaseUrl} =req.file ? req.file : "";
+    const photoAvatarUrl = req.uploadedFiles.photoAvatar || '';
     let updateData ={
 
   
@@ -191,7 +189,7 @@ encryptedPassword += cipher.final('hex');
         Prenom : req.body.Prenom,
         email : req.body.email,
         phone : req.body.phone,
-        photoAvatar : firebaseUrl,
+        photoAvatar : photoAvatarUrl,
         gender:req.body.gender,
         role:req.body.role,
         Nationalite : req.body.Nationalite,
