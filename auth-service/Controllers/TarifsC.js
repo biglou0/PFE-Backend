@@ -1,5 +1,7 @@
 const Chauffeur = require("../Models/Chauffeur");
-const Tarifs = require ("../Models/Tarifs")
+const Tarifs = require ("../Models/Tarifs");
+const cron = require('node-cron');
+const moment = require('moment-timezone');
 
 exports.addTarifAndUpdateChauffeurs = async (req, res, next) => {
     const { tarifName } = req.body;
@@ -42,6 +44,46 @@ exports.addTarifAndUpdateChauffeurs = async (req, res, next) => {
       return res.status(500).send({ error: error });
     }
   };
+
+  
+  function updateTariff() {
+    const tunisiaTime = moment().tz('Africa/Tunis');
+    const currentHour = tunisiaTime.hour();
+    const currentMinute = tunisiaTime.minute();
+    console.log('Time:', currentHour + ':' + currentMinute);
+  
+    if (currentHour === 14 && currentMinute === 8) {
+      Tarifs.findOne({}, (err, tariff) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+  
+        const oldTariff = parseFloat(tariff.tarif);
+        console.log('Old Tariff:', oldTariff);
+        const newTariff = oldTariff + (oldTariff * 0.5);
+  
+        tariff.tarifmaj = newTariff.toString();
+        tariff.save((err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log("Tarif Majoration updated to:", newTariff);
+        });
+      });
+    }
+  }
+  
+  // Schedule the function to run at 13:15 Tunisia time every day
+  cron.schedule('8 14 * * *', () => {
+    updateTariff();
+  }, {
+    scheduled: true,
+    timezone: "Africa/Tunis"
+  });
+  
+  
   
   
   

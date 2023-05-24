@@ -31,6 +31,11 @@ db.on('error',(err) =>{
 
 db.once('open', ()=> {
     console.log('DB Connection Estabblished !')
+    const currentTime = new Date();
+    const options = { timeZone: 'Africa/Tunis', hour12: false };
+    const currentHour = currentTime.toLocaleString('en-US', { hour: '2-digit', ...options }).slice(0, 2);
+    const currentMinute = currentTime.toLocaleString('en-US', { minute: '2-digit', ...options });
+    console.log('Time:', currentHour + ':' + currentMinute);
 })
 
 
@@ -41,7 +46,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
 const corsOptions ={
-  origin:'http://localhost:3000', 
+  origin:'http://localhost:3001', 
   credentials:true,            //access-control-allow-credentials:true
   optionSuccessStatus:200
 }

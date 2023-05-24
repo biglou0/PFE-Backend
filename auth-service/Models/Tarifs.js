@@ -5,6 +5,11 @@ const tarifSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  tarifmaj: {
+    type: String,
+    
+  },
+  
   // Add other properties specific to your tariff model if needed
 });
 
