@@ -143,7 +143,10 @@ const login = (req, res) => {
         role: user.role,
         email: user.email,
         password: decryptedPassword,
-        id : user.id
+        id : user.id,
+        Nom: user.Nom,
+        Prenom: user.Prenom,
+        photoAvatar : user.photoAvatar
       });
     } else {
       res.status(403).send({ message: "Password does not match!" });

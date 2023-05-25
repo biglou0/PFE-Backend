@@ -17,6 +17,7 @@ const Agentchauff = require  ('./routes/ChauffeurRoute');
 const ClRoute = require  ('./routes/ClientRoute');
 const Rec = require ('./routes/ReclamationRout')
 const Voi = require ('./routes/VoitureRoutes')
+const tar = require ('./routes/TarifRoute')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -56,12 +57,13 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/api',AuthRoute)
+app.use('/api',AuthRoute);
 app.use('/agent',Agentrout);
-app.use('/Chauff',Agentchauff)
-app.use('/Client',ClRoute)
-app.use('/Rec',Rec)
-app.use('/Voi',Voi)
+app.use('/Chauff',Agentchauff);
+app.use('/Client',ClRoute);
+app.use('/Rec',Rec);
+app.use('/Voi',Voi);
+app.use('/Tar',tar);
 
 
 
