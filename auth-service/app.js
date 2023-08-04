@@ -18,6 +18,7 @@ const ClRoute = require  ('./routes/ClientRoute');
 const Rec = require ('./routes/ReclamationRout')
 const Voi = require ('./routes/VoitureRoutes')
 const tar = require ('./routes/TarifRoute')
+const con = require ('./routes/ContactRoute')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -64,6 +65,7 @@ app.use('/Client',ClRoute);
 app.use('/Rec',Rec);
 app.use('/Voi',Voi);
 app.use('/Tar',tar);
+app.use('/Con',con);
 
 
 

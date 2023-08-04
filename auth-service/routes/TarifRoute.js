@@ -6,7 +6,7 @@ const Tarif  = require('../Controllers/TarifsC')
 
 
 router.get('/show', Tarif.showtarifs)
-
+router.post('/tarif', Tarif.addTarifAndUpdateChauffeurs);
 
 
 

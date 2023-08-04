@@ -38,6 +38,8 @@ router.put('/updateAg/:id',Multer.fields([
 ]),UploadImage,AuthController.update);
 router.put('/updatestatus/:id', AuthController.updatestatus);
 router.put('/updatestatuss/:id', AuthController.updatestatuss);
+router.put('/Uppass/:id', AuthController.updatepass);
+router.post('/reset', AuthController.resetPassword);
 
 
 

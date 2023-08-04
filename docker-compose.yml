@@ -13,17 +13,17 @@ services:
       - mongo 
    
     
-  # new-service:
-  #   build:  ./new-service
-  #   image: new-service
-  #   container_name: new-service
-  #   hostname: new-service
-  #   ports: 
-  #     - 3002:3000
-  #   networks:
-  #     - backendNetwork
-  #   depends_on:
-  #     - mongo  
+  web-front:
+    build: ./web-front
+    image: web-front
+    container_name: web-front
+    hostname: web-front
+    ports: 
+      - 3002:3000
+    networks:
+      - backendNetwork
+    depends_on:
+      - mongo  
 
 
     

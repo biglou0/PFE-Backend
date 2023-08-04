@@ -3,13 +3,13 @@ const bcrypt  =require('bcryptjs')
 const config = require("../config.json");
 const jwt    =require('jsonwebtoken')
 const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+
 
 
 /**--------------------Ajouter un agnet------------------------  */
 
 const register = async (req, res) => {
-    const { Nom , Prenom, email, phone,DateNaissance,gender,role ,Nationalite,licenseNo,cnicNo,address,ratingsAverage,ratingsQuantity,postalCode} = req.body;
+    const { Nom , Prenom, email, phone,DateNaissance,gender,role ,Nationalite,cnicNo,address,ratingsAverage,ratingsQuantity,postalCode} = req.body;
     
  
 // const {firebaseUrl} =req.file ? req.file : "";
@@ -21,13 +21,8 @@ const photoPermisVerUrl = req.uploadedFiles.photoPermisVer || '';
 const photoVtcUrl = req.uploadedFiles.photoVtc || '';
 const photoCinUrl = req.uploadedFiles.photoCin || '';
 
-console.log('tetsimage',photoAvatarUrl)
 
 
-const cipher = crypto.createCipher('aes-256-cbc', 'passwordforencrypt');
-let encryptedPassword = cipher.update(phone, 'utf8', 'hex');
-encryptedPassword += cipher.final('hex');
-  
     const verifUtilisateur = await Chauffeur.findOne({ email });
     if (verifUtilisateur) {
       res.status(403).send({ message: "Chauffeur existe deja !" });
@@ -46,7 +41,7 @@ encryptedPassword += cipher.final('hex');
       nouveauUtilisateur.Prenom = Prenom;
       nouveauUtilisateur.email = email;
       nouveauUtilisateur.phone = phone;
-      nouveauUtilisateur.password = encryptedPassword; 
+      nouveauUtilisateur.password = mdpEncrypted; 
       nouveauUtilisateur.photoAvatar = photoAvatarUrl;
        nouveauUtilisateur.photoCin = photoCinUrl;
       nouveauUtilisateur.photoPermisRec = photoPermisRecUrl;
@@ -57,13 +52,13 @@ encryptedPassword += cipher.final('hex');
       nouveauUtilisateur.Cstatus = "En_cours";
       nouveauUtilisateur.DateNaissance = DateNaissance
       nouveauUtilisateur.Nationalite = Nationalite
-      nouveauUtilisateur.licenseNo = licenseNo
       nouveauUtilisateur.cnicNo = cnicNo
       nouveauUtilisateur.address = address
       // nouveauUtilisateur.ratingsAverage = ratingsAverage
       // nouveauUtilisateur.ratingsQuantity = ratingsQuantity
       nouveauUtilisateur.postalCode = postalCode
       nouveauUtilisateur.isActive = true;
+      
   
       console.log (
         nouveauUtilisateur
@@ -131,78 +126,36 @@ encryptedPassword += cipher.final('hex');
 
 /**--------------Login Admin-------------------- */
   
-  const login = (req, res) => {
+const login = (req, res) => {
+  const username= req.body.username;
+  const password = req.body.password;
+  Chauffeur.findOne({ username: username }, function (err, user) {
+    if (err) {
+      console.log(err);
+      res.status(500).send({ message: "Error retrieving user with username " + username });
+      return;
+    }
+    if (!user) {
+      res.status(403).send({ message: "User not found with email " + username });
+      return;
+    }
 
-
-    console.log(
-      req.body.email
-    )
-  
-    console.log(
-      req.body.password
-    )
-  
-  
-  
-  
-    var email = req.body.email
-    var password = req.body.password
-    Chauffeur.findOne({ email: email }, function (err, user) {
-  
-      if (err) {
-        console.log(err);
-      }
-  
-  
-      if (user) {
-        bcrypt.compare(password, user.password, function (err, result) {
-          if (err) {
-            res.json({
-              error: err
-            })
-          }
-  
-          if (result) {
-            let token = jwt.sign({ Firstname: user.Firstname }, 'verysecretValue', { expiresIn: '1h' })
-           
-            
-            return res.json({
-  
-              Firstname: user.Firstname,
-              Lastname: user.Lastname,
-              email: user.email,
-              phone: user.phone,
-              password: user.password,
-         
-              token
-  
-  
-  
-  
-            })
-            
-            
-          } else {
-            res.status(403).send({ message: "password does not matched !" });
-  
-          }
-        })
-  
-  
-      } else {
-        res.status(403).send({ message: "Wrong email adress!" });
-  
-  
-  
-  
-  
-      }
-
-      
-    })
-
-  
-  }
+   
+    if (bcrypt.compare(password, user.password)) {
+      res.json({
+        role: user.role,
+        email: user.email,
+        password: user.password,
+        id : user.id,
+        Nom: user.Nom,
+        Prenom: user.Prenom,
+        photoAvatar : user.photoAvatar
+      });
+    } else {
+      res.status(403).send({ message: "Password does not match!" });
+    }
+  });
+};
 
   /**----------Update Agent----------------- */
   const update = (req, res, next)=>{
@@ -228,7 +181,6 @@ encryptedPassword += cipher.final('hex');
         role:req.body.role,
         Nationalite : req.body.Nationalite,
         DateNaissance : req.body.DateNaissance,
-       licenseNo : req.body.licenseNo,
        cnicNo : req.body.cnicNo,
        address : req.body.address,
       postalCode : req.body.postalCode,
@@ -351,10 +303,18 @@ const Comptevald = async (req, res, next) => {
 
 
         const recupereruse = async(req,res ,data) =>{
-    Chauffeur.find((err, data)=>{
-        res.json(data);
-        
-    });
+          Chauffeur.find(
+            { Cstatus: { $in: ["Validé", "Désactivé"] } },
+            (err, data) => {
+              if (err) {
+                console.error(err);
+                res.status(500).send("An error occurred");
+              } else {
+                res.json(data);
+                console.log(data);
+              }
+            }
+          );
 }
 
 // const recupereruse = async(req,res,data) =>{
@@ -366,6 +326,18 @@ const Comptevald = async (req, res, next) => {
       
 //   });
 // }
+
+const recuperernewchauf = async (req, res, data) => {
+  Chauffeur.find({ Cstatus: "En_cours" }, (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("An error occurred");
+    } else {
+      res.json(data);
+      console.log(data);
+    }
+  });
+};
 
 /**----------------------Supprimer un agent------------------- */
 
@@ -424,5 +396,5 @@ const destroy = async (req, res) => {
     
 
   module.exports ={
-    register, login,recupereruse,destroy,searchuse,update,updatestatus,chauffdes,updatestatuss,Comptevald
+    register, login,recupereruse,destroy,searchuse,update,updatestatus,chauffdes,updatestatuss,Comptevald,recuperernewchauf
     }

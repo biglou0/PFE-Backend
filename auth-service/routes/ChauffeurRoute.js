@@ -45,13 +45,14 @@ router.put('/updatechauf/:id',Multer.fields([
 ]),UploadImage,ChauffContro.update)
 
 
-//router.post('/loginAg',AuthController.login)
+router.post('/loginch',ChauffContro.login)
 router.get('/searchchauf/:id', ChauffContro.searchuse);
+router.get('/newchauf', ChauffContro.recuperernewchauf);
 //router.get('/getAg', AuthController.recupereruse);
 // router.put('/updatechauf/:id',Multer.single("photoAvatar"),UploadImage, ChauffContro.update);
 router.put('/updatestatus/:id', ChauffContro.updatestatus);
 router.put('/updatestatuss/:id', ChauffContro.updatestatuss);
-router.post('/tarif', tarifContro.addTarifAndUpdateChauffeurs);
+
 
 
 
