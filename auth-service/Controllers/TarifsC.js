@@ -52,7 +52,7 @@ exports.addTarifAndUpdateChauffeurs = async (req, res, next) => {
     const currentMinute = tunisiaTime.minute();
     console.log('Time:', currentHour + ':' + currentMinute);
   
-    if (currentHour === 12 && currentMinute === 24) {
+    if (currentHour === 20 && currentMinute === 44) {
       Tarifs.findOne({}, (err, tariff) => {
         if (err) {
           console.error(err);
@@ -77,7 +77,7 @@ exports.addTarifAndUpdateChauffeurs = async (req, res, next) => {
   }
   
   // Schedule the function to run at 13:15 Tunisia time every day
-  cron.schedule('24 12 * * *', () => {
+  cron.schedule('44 20 * * *', () => {
     updateTariff();
   }, {
     scheduled: true,
